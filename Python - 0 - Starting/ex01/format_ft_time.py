@@ -1,19 +1,8 @@
-import datetime
+from datetime import datetime
 
-try:
-    today = datetime.datetime.now()
-    epoch = datetime.datetime.fromtimestamp(0)
+now = datetime.now()
+epoch = datetime(1970, 1, 1)
+seconds = (now - epoch).total_seconds()
 
-    formated_today = today.strftime("%b %-d %Y")
-    formated_epoch = epoch.strftime("%B %-d, %Y")
-
-    delta = today - epoch
-    delta_in_seconds = delta.total_seconds()
-
-    seconds_formated = f"{delta_in_seconds:,.4f}"
-    scientific_notation = "{:.2e}".format(delta_in_seconds)
-    print(f"Seconds since {formated_epoch}: {seconds_formated} or \
-{scientific_notation} in scientific notation")
-    print(formated_today)
-except Exception as e:
-    print(f"Error: {e}")
+print(f"Seconds since January 1, 1970: {seconds:,.4f} or {seconds:.2e} in scientific notation")
+print(now.strftime("%b %-d %Y"))
