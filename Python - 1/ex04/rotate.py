@@ -3,39 +3,40 @@ from __future__ import annotations
 import numpy as np
 
 
-def zoom_image(image, factor: int = 2, target_size: int = 400):
-    """Return a centered square crop of the image, capped at 400x400."""
-    if image.ndim == 2:
-        height, width = image.shape
-    else:
-        height, width, _ = image.shape
+def zoom_image(image: np.ndarray, factor: int = 2, target_size: int = 400) \
+        -> np.ndarray:
+    """Return a centered square crop of the image, kept at target_size."""
+    if not isinstance(image, np.ndarray):
+        raise TypeError("image must be a NumPy array")
+    if image.ndim not in (2, 3):
+        raise ValueError("image must be a 2D or 3D NumPy array")
 
+    height, width = image.shape[:2]
     side = min(height, width, target_size)
     if side <= 0:
         raise ValueError("Image is too small to crop a valid square.")
 
-    center_y = height // 2
-    center_x = width // 2
-    y0 = max(0, center_y - side // 2)
-    y1 = min(height, y0 + side)
-    x0 = max(0, center_x - side // 2)
-    x1 = min(width, x0 + side)
+    start_y = max(0, (height - side) // 2)
+    start_x = max(0, (width - side) // 2)
+    end_y = start_y + side
+    end_x = start_x + side
 
-    if (y1 - y0) != side or (x1 - x0) != side:
-        y0 = max(0, center_y - side // 2)
-        y1 = y0 + side
-        x0 = max(0, center_x - side // 2)
-        x1 = x0 + side
-
-    return image[y0:y1, x0:x1]
+    crop = image[start_y:end_y, start_x:end_x]
+    return crop
 
 
 def ft_rotate(array: np.ndarray) -> np.ndarray:
-    """Rotate an image array by 90 degrees counter-clockwise."""
+    """Rotate a 2D or 3D image array by 90 degrees clockwise."""
     if array.ndim == 2:
-        return np.rot90(array)
+        rows, cols = array.shape
+        return array.T[:, ::-1]
     if array.ndim == 3:
-        return np.rot90(array)
+        rows, cols, channels = array.shape
+        rotated = np.empty((cols, rows, channels), dtype=array.dtype)
+        for i in range(rows):
+            for j in range(cols):
+                rotated[cols - 1 - j, i, :] = array[i, j, :]
+        return rotated
     raise ValueError("The input must be a 2D or 3D NumPy array.")
 
 
@@ -51,20 +52,12 @@ def main() -> None:
     except Exception as exc:
         print(f"Error: {exc}")
         return
-
-    print(f"Original shape: {image.shape}")
-    print(f"Original dtype: {image.dtype}")
-    print("Original pixels:")
     print(image)
 
     zoomed = zoom_image(image, factor=2)
-    print(f"Zoomed shape: {zoomed.shape}")
-    print("Zoomed pixels:")
-    print(zoomed)
 
     rotated = ft_rotate(zoomed)
-    print(f"Rotated shape: {rotated.shape}")
-    print("Rotated pixels:")
+    print(f"New shape after Transpose: {rotated.shape}")
     print(rotated)
 
     try:

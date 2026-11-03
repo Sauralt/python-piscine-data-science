@@ -37,10 +37,7 @@ AssertionError."""
 
 def filterstring(S: str, N: int) -> list:
     """The filterstring() function returns a list of words from S that have a
-length greater than N. The functions accepts two arguments:
-- a string 'S''
-- an integer 'N'
-A word is separated by whitespaces."""
+length greater than N. """
     parse_string(S)
 
     words_list = S.split()

@@ -1,19 +1,16 @@
 from __future__ import annotations
 from typing import Any
+from PIL import Image
+import numpy as np
 
 
 def ft_load(path: str) -> Any:
-    """Load an image from a path and return it as a NumPy array."""
-    try:
-        import numpy as np
-        from PIL import Image
-    except ImportError as exc:
-        raise RuntimeError("Missing dependency: install Pillow and NumPy") \
-            from exc
-
+    """Load an image from the given path and return it as a NumPy array."""
     try:
         with Image.open(path) as img:
-            return np.array(img)
+            array = np.array(img)
+            print(f"The shape of image is: {array.shape}")
+            return array
     except FileNotFoundError as exc:
         raise FileNotFoundError(f"Image not found: {path}") from exc
     except Exception as exc:

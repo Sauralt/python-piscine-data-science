@@ -1,6 +1,4 @@
-
 from __future__ import annotations
-
 import numpy as np
 
 
@@ -10,51 +8,40 @@ def _check_rgb(array: np.ndarray) -> None:
 
 
 def ft_invert(array: np.ndarray) -> np.ndarray:
-    """Invert all color channels while keeping the same image shape."""
+    """Inverts the color of the image received."""
     _check_rgb(array)
-    result = array.copy()
-    result[:, :, 0] = 255 - result[:, :, 0]
-    result[:, :, 1] = 255 - result[:, :, 1]
-    result[:, :, 2] = 255 - result[:, :, 2]
-    return result
+    return 255 - array
 
 
 def ft_red(array: np.ndarray) -> np.ndarray:
-    """Keep only the red channel and set other channels to zero."""
+    """Keeps only the red channel of the image."""
     _check_rgb(array)
-    result = array.copy()
-    result[:, :, 1] = result[:, :, 1] * 0
-    result[:, :, 2] = result[:, :, 2] * 0
+    result = np.zeros_like(array)
+    result[:, :, 0] = array[:, :, 0]
     return result
 
 
 def ft_green(array: np.ndarray) -> np.ndarray:
-    """Keep only the green channel and set other channels to zero."""
+    """Keeps only the green channel of the image."""
     _check_rgb(array)
-    result = array.copy()
-    result[:, :, 0] = result[:, :, 0] - result[:, :, 0]
-    result[:, :, 2] = result[:, :, 2] - result[:, :, 2]
+    result = np.zeros_like(array)
+    result[:, :, 1] = array[:, :, 1]
     return result
 
 
 def ft_blue(array: np.ndarray) -> np.ndarray:
-    """Keep only the blue channel and set other channels to zero."""
+    """Keeps only the blue channel of the image."""
     _check_rgb(array)
-    result = array.copy()
-    result[:, :, 0] = 0
-    result[:, :, 1] = 0
+    result = np.zeros_like(array)
+    result[:, :, 2] = array[:, :, 2]
     return result
 
 
 def ft_grey(array: np.ndarray) -> np.ndarray:
-    """Convert an RGB image to grayscale while preserving shape."""
+    """Converts the image to grayscale."""
     _check_rgb(array)
-    result = array.copy()
-    grey = (result[:, :, 0] + result[:, :, 1] + result[:, :, 2]) / 3
-    result[:, :, 0] = grey
-    result[:, :, 1] = grey
-    result[:, :, 2] = grey
-    return result
+    grey = np.mean(array, axis=2, dtype=np.float64).astype(np.uint8)
+    return np.stack((grey, grey, grey), axis=2)
 
 
 def display_filters(array: np.ndarray) -> None:
@@ -88,8 +75,36 @@ def main() -> None:
         print(f"Error: unable to import loader: {exc}")
         return
 
-    image = ft_load("landscape.jpg")
-    display_filters(image)
+    try:
+        array = ft_load("landscape.jpg")
+    except Exception as exc:
+        print(f"Error: {exc}")
+        return
+
+    transformed = [
+        ("Original", array),
+        ("Invert", ft_invert(array.copy())),
+        ("Red", ft_red(array.copy())),
+        ("Green", ft_green(array.copy())),
+        ("Blue", ft_blue(array.copy())),
+        ("Grey", ft_grey(array.copy())),
+    ]
+
+    print(array)
+
+    import matplotlib.pyplot as plt
+
+    fig, axes = plt.subplots(2, 3, figsize=(12, 8))
+    axes = axes.flatten()
+
+    for ax, (title, image) in zip(axes, transformed):
+        ax.imshow(image)
+        ax.set_title(title)
+        ax.axis("off")
+
+    plt.tight_layout()
+    plt.show()
+    print(ft_invert.__doc__)
 
 
 if __name__ == "__main__":

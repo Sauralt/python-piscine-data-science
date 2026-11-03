@@ -1,31 +1,29 @@
 from __future__ import annotations
+import numpy as np
 
 
-def zoom_image(image, factor: int = 2, target_size: int = 400):
-    """Return a centered square crop of the image, capped at 400x400."""
-    if image.ndim == 2:
-        height, width = image.shape
-    else:
-        height, width, _ = image.shape
+def zoom_image(image: np.ndarray, factor: int = 2, target_size: int = 400) \
+        -> np.ndarray:
+    """Return a centered square crop of the image, capped at target_size."""
+    if not isinstance(image, np.ndarray):
+        raise TypeError("image must be a NumPy array")
+    if image.ndim not in (2, 3):
+        raise ValueError("image must be a 2D or 3D NumPy array")
 
+    height, width = image.shape[:2]
     side = min(height, width, target_size)
     if side <= 0:
         raise ValueError("Image is too small to crop a valid square.")
 
-    center_y = height // 2
-    center_x = width // 2
-    y0 = max(0, center_y - side // 2)
-    y1 = min(height, y0 + side)
-    x0 = max(0, center_x - side // 2)
-    x1 = min(width, x0 + side)
+    start_y = max(0, (height - side) // 2)
+    start_x = max(0, (width - side) // 2)
+    end_y = start_y + side
+    end_x = start_x + side
 
-    if (y1 - y0) != side or (x1 - x0) != side:
-        y0 = max(0, center_y - side // 2)
-        y1 = y0 + side
-        x0 = max(0, center_x - side // 2)
-        x1 = x0 + side
-
-    return image[y0:y1, x0:x1]
+    crop = image[start_y:end_y, start_x:end_x]
+    if factor > 1:
+        return crop[::factor, ::factor]
+    return crop
 
 
 def main():
@@ -42,15 +40,11 @@ def main():
         return
 
     height, width = img.shape[:2]
-    channels = img.shape[2] if img.ndim == 3 else 1
 
-    print(f"Image size: {width} x {height}")
-    print(f"Number of channels: {channels}")
-    print("Pixel content:")
     print(img)
 
     zoomed = zoom_image(img, factor=2)
-    print("Zoomed image:")
+    print(f"The shape of image after zoom is: {zoomed.shape}")
     print(zoomed)
 
     try:

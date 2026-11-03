@@ -1,10 +1,21 @@
 def slice_me(family: list, start: int, end: int) -> list:
     """Return a slice of the 2D family while printing its shape before and
-    after."""
-    print(f"My shape is : ({len(family)}, {len(family[0])})")
+    after.
+    """
+    if not family or not isinstance(family, list):
+        raise ValueError("family must be a non-empty 2D list")
+    if not all(isinstance(row, list) for row in family):
+        raise TypeError("family must be a list of lists")
+    if not family[0]:
+        raise ValueError("each row must contain at least one value")
+
+    rows, cols = len(family), len(family[0])
+    print(f"My shape is : ({rows}, {cols})")
+
     sliced = family[start:end]
-    print(f"My new shape is : ({len(sliced)}, {len(sliced[0])})")
-    print(sliced)
+    new_rows = len(sliced)
+    new_cols = len(sliced[0]) if sliced and sliced[0] else 0
+    print(f"My new shape is : ({new_rows}, {new_cols})")
     return sliced
 
 

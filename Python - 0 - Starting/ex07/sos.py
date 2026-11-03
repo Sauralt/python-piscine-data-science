@@ -41,11 +41,8 @@ def ft_morse(text):
 def main():
     try:
         args = sys.argv[1:]
-
         assert len(args) == 1, "AssertionError: exactly 1 argument is required"
-
         print(ft_morse(args[0]))
-
     except AssertionError as msg:
         print(msg)
         exit(1)

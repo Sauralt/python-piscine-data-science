@@ -1,18 +1,38 @@
+def _validate_numeric_list(values: list[int | float], name: str) \
+     -> list[int | float]:
+    """Validate a list of numeric values."""
+    if not isinstance(values, list):
+        raise TypeError(f"{name} must be a list")
+    if not values:
+        raise ValueError(f"{name} must not be empty")
+    for value in values:
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            raise TypeError(f"All values in {name} must be int or float")
+    return values
+
+
 def give_bmi(height: list[int | float], weight: list[int | float]) \
         -> list[int | float]:
-    """The give_bmi() function returns a list of BMI values calculated from the
-    given height and weight lists """
+    """Return BMI values computed from matching height and weight lists."""
+    height = _validate_numeric_list(height, "height")
+    weight = _validate_numeric_list(weight, "weight")
+    if len(height) != len(weight):
+        raise ValueError("height and weight must have the same size")
+
     bmi = []
     for h, w in zip(height, weight):
+        if h <= 0:
+            raise ValueError("height values must be strictly positive")
         bmi.append(w / (h ** 2))
     return bmi
 
 
 def apply_limit(bmi: list[int | float], limit: int) -> list[bool]:
-    """The apply_limit() function returns a list of boolean values indicating
-    whether each BMI value in the given list is greater than the specified
-    limit """
-    return [b > limit for b in bmi]
+    """Return a list of booleans indicating if each BMI is above the limit."""
+    bmi = _validate_numeric_list(bmi, "bmi")
+    if not isinstance(limit, int) or isinstance(limit, bool):
+        raise TypeError("limit must be an int")
+    return [value > limit for value in bmi]
 
 
 # def main():

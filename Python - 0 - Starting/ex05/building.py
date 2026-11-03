@@ -27,7 +27,6 @@ def main(argv):
     try:
 
         assert len(argv) <= 2, "AssertionError: only one argument is allowed"
-
         text = argv[1]
         analyze(text)
 
